@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Untukmu, dari Jauh 🌸</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Quicksand:wght@400;500;600;700&display=swap');
+
+  :root{
+    --blush: #fbeef0;
+    --blush-deep: #f3c9d4;
+    --rose: #e8a6b8;
+    --rose-deep: #d4849c;
+    --plum: #6b4452;
+    --cream: #fffaf7;
+    --sage: #a8b89a;
+    --gold: #d8b178;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html, body{
+    height:100%;
+    background: linear-gradient(180deg, var(--cream) 0%, var(--blush) 55%, var(--blush-deep) 100%);
+    font-family: 'Quicksand', sans-serif;
+    color: var(--plum);
+    overflow-x:hidden;
+  }
+
+  /* ---------- ENVELOPE / GATE SCREEN ---------- */
+  #gate{
+    position:fixed; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background: radial-gradient(circle at 50% 30%, #fff7f5 0%, var(--blush) 60%, var(--blush-deep) 100%);
+    z-index:100;
+    transition: opacity 1.1s ease, visibility 1.1s ease;
+  }
+  #gate.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .envelope{
+    width: 220px; height: 150px;
+    position:relative;
+    cursor:pointer;
+    filter: drop-shadow(0 10px 25px rgba(107,68,82,0.25));
+    animation: floatGate 4s ease-in-out infinite;
+  }
+  @keyframes floatGate{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-10px); }
+  }
+  .envelope .body{
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, #ffffff, var(--blush));
+    border-radius: 6px;
+    border: 1px solid var(--blush-deep);
+  }
+  .envelope .flap{
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    clip-path: polygon(0 0, 50% 55%, 100% 0);
+    border-radius: 6px 6px 0 0;
+    transform-origin: top;
+    transition: transform 0.8s cubic-bezier(.6,-0.2,.3,1.3);
+  }
+  .envelope.open .flap{ transform: rotateX(180deg); }
+  .envelope .seal{
+    position:absolute; top:38%; left:50%; transform:translate(-50%,-50%);
+    width:38px; height:38px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, var(--gold), #b5874a);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:#fff8ec;
+    z-index:2;
+  }
+
+  #gate p{
+    margin-top: 42px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size: 1.35rem;
+    color: var(--plum);
+    letter-spacing: 0.3px;
+    text-align:center;
+    opacity:0.85;
+  }
+  #gate span.sub{
+    display:block;
+    margin-top:8px;
+    font-family:'Quicksand', sans-serif;
+    font-style:normal;
+    font-size:0.78rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color: var(--rose-deep);
+  }
+
+  /* ---------- MAIN SCENE ---------- */
+  #scene{
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding: 12vh 6vw 10vh;
+    position:relative;
+    opacity:0;
+    transition: opacity 1.2s ease 0.3s;
+  }
+  #scene.visible{ opacity:1; }
+
+  /* floating ambient petals */
+  .petal{
+    position:fixed; top:-5%;
+    width:14px; height:14px;
+    background: var(--rose);
+    border-radius: 0 60% 0 60%;
+    opacity:0.55;
+    pointer-events:none;
+    z-index:5;
+    animation: fall linear infinite;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(360deg); }
+  }
+
+  .eyebrow{
+    font-size:0.72rem;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--rose-deep);
+    margin-bottom: 18px;
+    opacity:0;
+    animation: riseIn 1s ease forwards 0.4s;
+  }
+
+  h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size: clamp(2.1rem, 6vw, 3.6rem);
+    text-align:center;
+    line-height:1.15;
+    color: var(--plum);
+    max-width: 720px;
+    opacity:0;
+    animation: riseIn 1s ease forwards 0.6s;
+  }
+  h1 em{
+    font-style: italic;
+    color: var(--rose-deep);
+  }
+
+  .distance-line{
+    margin-top:18px;
+    font-size:0.95rem;
+    color: var(--plum);
+    opacity:0;
+    animation: riseIn 1s ease forwards 0.85s;
+    text-align:center;
+    max-width:480px;
+    line-height:1.6;
+  }
+
+  /* ---------- BOUQUET ---------- */
+  #bouquet-wrap{
+    margin-top: 7vh;
+    position:relative;
+    width: min(420px, 80vw);
+    opacity:0;
+    transform: translateY(30px);
+    animation: riseIn 1.2s ease forwards 1.1s;
+  }
+
+  svg#bouquet{ width:100%; height:auto; overflow:visible; }
+
+  .stem{ transform-origin: bottom center; }
+
+  .leaf{ transform-origin: center; }
+
+  .bloom{
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+    animation: bloomPop 0.9s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes bloomPop{
+    to{ transform: scale(1); }
+  }
+
+  .bloom-sway{
+    animation: sway 4.5s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: bottom center;
+  }
+  @keyframes sway{
+    0%,100%{ transform: rotate(-1.2deg); }
+    50%{ transform: rotate(1.4deg); }
+  }
+
+  .wrap-paper{
+    transform-box: fill-box;
+    transform-origin: top center;
+  }
+
+  @keyframes riseIn{
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* ---------- MESSAGE CARD ---------- */
+  #card-trigger{
+    margin-top: 6vh;
+    background: var(--cream);
+    border: 1px solid var(--blush-deep);
+    color: var(--rose-deep);
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    letter-spacing:1px;
+    padding: 14px 34px;
+    border-radius: 999px;
+    cursor:pointer;
+    box-shadow: 0 8px 20px rgba(212,132,156,0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    opacity:0;
+    animation: riseIn 1s ease forwards 1.6s;
+  }
+  #card-trigger:hover{ transform: translateY(-3px); box-shadow: 0 12px 26px rgba(212,132,156,0.35); }
+  #card-trigger:active{ transform: translateY(0); }
+
+  #card-overlay{
+    position:fixed; inset:0;
+    background: rgba(107,68,82,0.45);
+    backdrop-filter: blur(4px);
+    display:flex; align-items:center; justify-content:center;
+    z-index:50;
+    opacity:0; visibility:hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    padding: 24px;
+  }
+  #card-overlay.show{ opacity:1; visibility:visible; }
+
+  .letter{
+    background: var(--cream);
+    max-width: 460px;
+    width:100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 48px 38px;
+    border-radius: 4px;
+    position:relative;
+    box-shadow: 0 30px 60px rgba(107,68,82,0.35);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.4s cubic-bezier(.2,.9,.3,1.3);
+    border-top: 3px solid var(--rose);
+  }
+  #card-overlay.show .letter{ transform: scale(1) translateY(0); }
+
+  .letter::before{
+    content:'';
+    position:absolute; top:14px; left:14px; right:14px; bottom:14px;
+    border: 1px solid var(--blush-deep);
+    pointer-events:none;
+  }
+
+  .letter h2{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:1.7rem;
+    color: var(--rose-deep);
+    margin-bottom:18px;
+    text-align:center;
+  }
+  .letter p{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.18rem;
+    line-height:1.85;
+    color: var(--plum);
+    text-align:center;
+    margin-bottom: 14px;
+  }
+  .letter .signoff{
+    margin-top:22px;
+    font-style:italic;
+    font-size:1.05rem;
+    color: var(--rose-deep);
+  }
+
+  .close-letter{
+    position:absolute; top:14px; right:18px;
+    background:none; border:none;
+    font-size:1.3rem;
+    color: var(--plum);
+    cursor:pointer;
+    opacity:0.5;
+    transition: opacity 0.2s;
+  }
+  .close-letter:hover{ opacity:1; }
+
+  .reveal-gift{
+    margin-top: 26px;
+    display:block;
+    margin-left:auto; margin-right:auto;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    color: var(--cream);
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size:0.82rem;
+    letter-spacing:1px;
+    padding: 13px 30px;
+    border:none;
+    border-radius: 999px;
+    cursor:pointer;
+    box-shadow: 0 8px 18px rgba(212,132,156,0.4);
+    transition: transform 0.25s ease;
+  }
+  .reveal-gift:hover{ transform: translateY(-2px); }
+  .reveal-gift.hidden{ display:none; }
+
+  /* ---------- GIFT PHOTO CARD ---------- */
+  #gift-card{
+    display:none;
+    text-align:center;
+  }
+  #gift-card.show{ display:block; animation: giftIn 0.7s cubic-bezier(.2,.9,.3,1.2); }
+  @keyframes giftIn{
+    from{ opacity:0; transform: scale(0.85) translateY(16px); }
+    to{ opacity:1; transform: scale(1) translateY(0); }
+  }
+  #gift-card .eyebrow-gift{
+    font-size:0.7rem;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--rose-deep);
+    margin-bottom:14px;
+  }
+  #gift-card .frame{
+    display:inline-block;
+    padding: 14px 14px 46px;
+    background: var(--cream);
+    border-radius: 4px;
+    box-shadow: 0 16px 40px rgba(107,68,82,0.3);
+    transform: rotate(-2deg);
+    max-width: 280px;
+  }
+  #gift-card .frame img{
+    width:100%;
+    display:block;
+    border-radius: 2px;
+  }
+  #gift-card .caption{
+    margin-top:14px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:1.1rem;
+    color: var(--rose-deep);
+  }
+
+  /* ---------- MUSIC TOGGLE ---------- */
+  #music-toggle{
+    position:fixed;
+    bottom:26px; right:26px;
+    width:52px; height:52px;
+    border-radius:50%;
+    background: var(--cream);
+    border: 1px solid var(--blush-deep);
+    box-shadow: 0 8px 22px rgba(107,68,82,0.25);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:60;
+    font-size:1.3rem;
+  }
+  #music-toggle.playing{ animation: pulseMusic 1.8s ease-in-out infinite; }
+  @keyframes pulseMusic{
+    0%,100%{ box-shadow: 0 8px 22px rgba(212,132,156,0.25); }
+    50%{ box-shadow: 0 8px 28px rgba(212,132,156,0.55); }
+  }
+
+  footer{
+    margin-top: 9vh;
+    font-size:0.72rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color: var(--rose-deep);
+    opacity:0.6;
+    text-align:center;
+    opacity:0;
+    animation: riseIn 1s ease forwards 1.9s;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- GATE / ENVELOPE OPENING SCREEN -->
+  <div id="gate">
+    <div class="envelope" id="envelope">
+      <div class="body"></div>
+      <div class="flap"></div>
+      <div class="seal">♥</div>
+    </div>
+    <p>Ada kiriman kecil untukmu<span class="sub">Ketuk amplopnya</span></p>
+  </div>
+
+  <!-- AMBIENT FALLING PETALS -->
+  <div id="petals"></div>
+
+  <!-- MAIN SCENE -->
+  <div id="scene">
+    <div class="eyebrow">Dari jauh, untuk kamu</div>
+    <h1>Jarak ini panjang,<br>tapi rasaku <em>tidak pernah</em> jauh darimu.</h1>
+    <p class="distance-line">Aku nggak bisa kasih buket ini langsung ke tanganmu,<br class="br-desktop"> jadi aku buatkan satu yang nggak akan layu. 🌸</p>
+
+    <div id="bouquet-wrap">
+      <svg id="bouquet" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- WRAPPING PAPER -->
+        <g class="wrap-paper">
+          <path d="M120 460 L80 300 Q200 250 320 300 L280 460 Z" fill="#fdf3ef" stroke="#f3c9d4" stroke-width="2"/>
+          <path d="M140 460 L105 305 Q200 268 295 305 L260 460 Z" fill="#fff8f4"/>
+          <line x1="200" y1="300" x2="200" y2="460" stroke="#e8a6b8" stroke-width="1.5" opacity="0.5"/>
+        </g>
+
+        <!-- TWINE -->
+        <ellipse cx="200" cy="305" rx="92" ry="14" fill="none" stroke="#d8b178" stroke-width="4"/>
+
+        <!-- STEMS -->
+        <g class="stem" stroke="#7a9a6e" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M200 300 Q195 230 175 170"/>
+          <path d="M200 300 Q205 230 225 170"/>
+          <path d="M200 300 Q198 220 150 190"/>
+          <path d="M200 300 Q202 220 250 190"/>
+          <path d="M200 300 Q200 210 200 140"/>
+          <path d="M200 300 Q190 240 130 220"/>
+          <path d="M200 300 Q210 240 270 220"/>
+        </g>
+
+        <!-- LEAVES -->
+        <g class="leaf" fill="#8fad81">
+          <ellipse cx="165" cy="240" rx="16" ry="7" transform="rotate(-35 165 240)"/>
+          <ellipse cx="235" cy="240" rx="16" ry="7" transform="rotate(35 235 240)"/>
+          <ellipse cx="150" cy="270" rx="14" ry="6" transform="rotate(-50 150 270)"/>
+          <ellipse cx="250" cy="270" rx="14" ry="6" transform="rotate(50 250 270)"/>
+        </g>
+
+        <!-- FILLER BABY'S BREATH -->
+        <g class="bloom" style="animation-delay:0.2s">
+          <g fill="#ffffff" stroke="#f3d9e0" stroke-width="0.5">
+            <circle cx="140" cy="195" r="4"/>
+            <circle cx="150" cy="180" r="3.5"/>
+            <circle cx="260" cy="195" r="4"/>
+            <circle cx="252" cy="178" r="3.5"/>
+            <circle cx="200" cy="150" r="3.5"/>
+            <circle cx="120" cy="225" r="3.5"/>
+            <circle cx="282" cy="225" r="3.5"/>
+          </g>
+        </g>
+
+        <!-- ROSE BLOOM TEMPLATE (repeated via use, varied placement) -->
+        <defs>
+          <g id="rose-pink">
+            <circle r="17" fill="#f3c9d4"/>
+            <circle r="13" fill="#eeb3c3"/>
+            <circle r="9" fill="#e8a6b8"/>
+            <circle r="5" fill="#d4849c"/>
+          </g>
+          <g id="rose-blush">
+            <circle r="15" fill="#fbeef0"/>
+            <circle r="11.5" fill="#f3c9d4"/>
+            <circle r="8" fill="#eeb3c3"/>
+            <circle r="4.5" fill="#d4849c"/>
+          </g>
+          <g id="rose-white">
+            <circle r="14" fill="#ffffff"/>
+            <circle r="10.5" fill="#fdf3ef"/>
+            <circle r="7" fill="#f3c9d4"/>
+            <circle r="3.5" fill="#e8a6b8"/>
+          </g>
+        </defs>
+
+        <g class="bloom-sway">
+          <use href="#rose-pink" x="175" y="168" class="bloom" style="animation-delay:0.45s"/>
+        </g>
+        <g class="bloom-sway" style="animation-delay:0.3s">
+          <use href="#rose-blush" x="225" y="168" class="bloom" style="animation-delay:0.55s"/>
+        </g>
+        <g class="bloom-sway" style="animation-delay:0.6s">
+          <use href="#rose-white" x="150" y="188" class="bloom" style="animation-delay:0.65s"/>
+        </g>
+        <g class="bloom-sway" style="animation-delay:0.9s">
+          <use href="#rose-white" x="250" y="188" class="bloom" style="animation-delay:0.75s"/>
+        </g>
+        <g class="bloom-sway" style="animation-delay:1.2s">
+          <use href="#rose-pink" x="200" y="138" class="bloom" style="animation-delay:0.85s"/>
+        </g>
+        <g class="bloom-sway" style="animation-delay:0.5s">
+          <use href="#rose-blush" x="130" y="218" class="bloom" style="animation-delay:0.95s"/>
+        </g>
+        <g class="bloom-sway" style="animation-delay:0.8s">
+          <use href="#rose-blush" x="270" y="218" class="bloom" style="animation-delay:1.05s"/>
+        </g>
+
+        <!-- small accent leaves near top blooms -->
+        <g class="leaf" fill="#9bc18c">
+          <ellipse cx="185" cy="155" rx="10" ry="5" transform="rotate(-20 185 155)"/>
+          <ellipse cx="215" cy="155" rx="10" ry="5" transform="rotate(20 215 155)"/>
+        </g>
+      </svg>
+    </div>
+
+    <button id="card-trigger">Baca pesan untukmu 💌</button>
+
+    <footer>dibuat dengan rindu, dari jauh</footer>
+  </div>
+
+  <!-- LETTER OVERLAY -->
+  <div id="card-overlay">
+    <div class="letter">
+      <button class="close-letter" id="closeLetter">✕</button>
+
+      <div id="letter-text">
+        <h2>Untuk kamu, Sayang</h2>
+        <p>
+          Aku tahu jarak kita nggak pendek, dan ada hari-hari yang terasa berat
+          karena nggak bisa peluk kamu langsung. Tapi setiap pagi aku bangun
+          masih mikirin kamu, dan setiap malam aku tidur masih bersyukur ada kamu.
+        </p>
+        <p>
+          Buket ini mungkin nggak wangi seperti aslinya, nggak bisa kamu pegang
+          kelopaknya. Tapi setiap bunga di sini aku "tanam" dengan hal yang nyata:
+          rindu yang nggak pernah putus dan janji kalau jarak ini cuma sementara.
+        </p>
+        <p class="signoff">Sampai kita ketemu lagi — selalu cintamu. 🤍</p>
+
+        <button class="reveal-gift" id="revealGift">Ada satu lagi untukmu 🎁</button>
+      </div>
+
+      <div id="gift-card">
+        <div class="eyebrow-gift">Kado kecil dariku</div>
+        <div class="frame">
+          <img src="images/kado.jpg" alt="Kenangan kita berdua" />
+        </div>
+        <p class="caption">Senyum ini yang selalu aku rindukan.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MUSIC TOGGLE -->
+  <button id="music-toggle" aria-label="Putar musik">🔇</button>
+  <audio id="bgm" loop preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8e70c5867.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+  // ----- Envelope open -> reveal scene -----
+  const gate = document.getElementById('gate');
+  const envelope = document.getElementById('envelope');
+  const scene = document.getElementById('scene');
+  const bgm = document.getElementById('bgm');
+  const musicToggle = document.getElementById('music-toggle');
+
+  envelope.addEventListener('click', () => {
+    envelope.classList.add('open');
+    setTimeout(() => {
+      gate.classList.add('hidden');
+      scene.classList.add('visible');
+      startPetals();
+    }, 700);
+
+    // try to start music automatically on this user gesture
+    bgm.volume = 0.5;
+    bgm.play().then(() => {
+      musicToggle.textContent = '🔊';
+      musicToggle.classList.add('playing');
+    }).catch(() => {
+      musicToggle.textContent = '🔇';
+    });
+  });
+
+  // ----- Music toggle -----
+  musicToggle.addEventListener('click', () => {
+    if (bgm.paused) {
+      bgm.play();
+      musicToggle.textContent = '🔊';
+      musicToggle.classList.add('playing');
+    } else {
+      bgm.pause();
+      musicToggle.textContent = '🔇';
+      musicToggle.classList.remove('playing');
+    }
+  });
+
+  // ----- Letter modal -----
+  const cardTrigger = document.getElementById('card-trigger');
+  const cardOverlay = document.getElementById('card-overlay');
+  const closeLetter = document.getElementById('closeLetter');
+
+  cardTrigger.addEventListener('click', () => cardOverlay.classList.add('show'));
+  closeLetter.addEventListener('click', () => cardOverlay.classList.remove('show'));
+  cardOverlay.addEventListener('click', (e) => {
+    if (e.target === cardOverlay) cardOverlay.classList.remove('show');
+  });
+
+  // ----- Gift photo reveal -----
+  const revealGift = document.getElementById('revealGift');
+  const giftCard = document.getElementById('gift-card');
+  const letterText = document.getElementById('letter-text');
+
+  revealGift.addEventListener('click', () => {
+    letterText.querySelector('.reveal-gift').classList.add('hidden');
+    giftCard.classList.add('show');
+  });
+
+  // ----- Ambient falling petals -----
+  function startPetals(){
+    const container = document.getElementById('petals');
+    const colors = ['#e8a6b8', '#f3c9d4', '#ffffff'];
+    for (let i = 0; i < 18; i++) {
+      const petal = document.createElement('div');
+      petal.className = 'petal';
+      petal.style.left = Math.random() * 100 + 'vw';
+      petal.style.background = colors[Math.floor(Math.random()*colors.length)];
+      petal.style.animationDuration = (8 + Math.random() * 8) + 's';
+      petal.style.animationDelay = (Math.random() * 10) + 's';
+      petal.style.opacity = 0.3 + Math.random() * 0.4;
+      const size = 8 + Math.random() * 10;
+      petal.style.width = size + 'px';
+      petal.style.height = size + 'px';
+      container.appendChild(petal);
+    }
+  }
+</script>
+</body>
+</html>
